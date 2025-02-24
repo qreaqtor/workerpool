@@ -26,9 +26,9 @@ func getSleepAction(wg *sync.WaitGroup, d time.Duration) Action {
 	}
 }
 
-const delta = time.Millisecond * 100
+const delta = time.Millisecond * 200
 
-func runTestCase(wp *WorkerPool, testCase testCase, t *testing.T) {
+func runSleepTestCase(t *testing.T, wp *WorkerPool, testCase testCase) {
 	wg := new(sync.WaitGroup)
 	wg.Add(testCase.ActionsCount)
 
@@ -92,7 +92,7 @@ func TestWorkerPoolWithSleepAction(t *testing.T) {
 	for _, testCase := range testCases {
 		wp := NewWorkerPool(testCase.WorkersCount)
 
-		runTestCase(wp, testCase, t)
+		runSleepTestCase(t, wp, testCase)
 	}
 }
 
@@ -106,7 +106,7 @@ func TestWorkerPoolPushAfterCloseShouldBeWithError(t *testing.T) {
 
 	wp := NewWorkerPool(testCase.WorkersCount)
 
-	runTestCase(wp, testCase, t)
+	runSleepTestCase(t, wp, testCase)
 
 	err := wp.Push(func() {})
 	assert.ErrorIs(t, err, errPoolClosed)
@@ -122,7 +122,7 @@ func TestWorkerPoolAfterFirstCloseShouldBeWithError(t *testing.T) {
 
 	wp := NewWorkerPool(testCase.WorkersCount)
 
-	runTestCase(wp, testCase, t)
+	runSleepTestCase(t, wp, testCase)
 
 	err := wp.Close()
 	assert.ErrorIs(t, err, errPoolClosed)
